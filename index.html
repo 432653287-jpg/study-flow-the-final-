@@ -1,0 +1,679 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#f1f4ff">
+<meta name="description" content="毎日の学習計画と勉強時間を記録する StudyFlow">
+<title>StudyFlow｜学習パートナー</title>
+<style>
+:root{
+ --ink:#17234b;--muted:#69738f;--blue:#356fe5;--blue2:#5b8df1;--teal:#24b49e;
+ --bg:#f1f4fc;--card:#fff;--line:#e5eaf5;--soft:#f5f7ff;--lav:#eef0ff;
+ --shadow:0 8px 26px rgba(39,57,105,.07);--radius:20px;
+}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(ellipse at 15% 0%,#e8edff 0,transparent 40%),var(--bg);color:var(--ink);
+ font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Yu Gothic",Meiryo,sans-serif;line-height:1.55}
+button,input,select{font:inherit}
+button{cursor:pointer}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #9dbaff;outline-offset:2px}
+.app-shell{max-width:1160px;margin:auto;padding:24px 26px 40px}
+.brand{display:flex;align-items:center;gap:14px;margin:0 0 22px;padding:0 8px}
+.brand-mark{width:52px;height:52px;border-radius:16px;display:grid;place-items:center;background:linear-gradient(145deg,#253d82,#4268c8);color:white;font-size:27px;box-shadow:0 7px 18px #29488b35}
+.brand h1{font-size:clamp(27px,4vw,38px);line-height:1;margin:0;letter-spacing:-1.2px;color:#1b2c61}
+.brand p{margin:7px 0 0;color:#596681;font-size:13px}
+.brand-date{margin-left:auto;color:#64708b;font-size:13px;text-align:right}
+.layout{display:grid;grid-template-columns:218px minmax(0,1fr);gap:20px;align-items:start}
+.sidebar{position:sticky;top:16px;background:#ffffffc9;border:1px solid #fff;border-radius:22px;padding:12px;box-shadow:var(--shadow);backdrop-filter:blur(12px)}
+.nav-btn{display:flex;align-items:center;gap:12px;width:100%;border:0;background:transparent;color:#5b6682;text-align:left;padding:13px 14px;border-radius:14px;font-weight:700;margin:2px 0}
+.nav-btn .nav-icon{width:25px;text-align:center;font-size:19px}
+.nav-btn.active{background:linear-gradient(110deg,#e9efff,#f0f2ff);color:#285bc6;box-shadow:inset 3px 0 #4779e8}
+.sidebar-note{margin:16px 8px 7px;padding:13px;background:#f6f8ff;border-radius:14px;color:#77809a;font-size:11px;line-height:1.6}
+main{min-width:0}
+.page{display:none}.page.active{display:block;animation:appear .18s ease}
+@keyframes appear{from{opacity:.65;transform:translateY(3px)}to{opacity:1;transform:none}}
+.page-head{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin:2px 2px 17px}
+.page-head h2{font-size:23px;margin:0;letter-spacing:-.4px}
+.page-head p{margin:4px 0 0;color:var(--muted);font-size:13px}
+.card{background:var(--card);border:1px solid #e8ecf6;border-radius:var(--radius);padding:20px;margin-bottom:15px;box-shadow:var(--shadow)}
+.card h3{font-size:16px;margin:0 0 14px}
+.hello{font-size:14px;color:#62708f;font-weight:650;margin:0 0 3px}
+.home-title{font-size:22px;font-weight:800;margin:0 0 17px}
+.home-grid{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(250px,.85fr);gap:15px}
+.summary-card{background:linear-gradient(135deg,#fff,#f7f9ff)}
+.summary-top{display:flex;justify-content:space-between;gap:10px;align-items:center}
+.summary-top h3{margin:0}
+.goal-label{font-size:12px;color:var(--muted)}
+.summary-numbers{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:18px 0}
+.metric strong{display:block;font-size:29px;line-height:1.2;letter-spacing:-.7px}
+.metric span{font-size:12px;color:var(--muted)}
+.progress-head{display:flex;justify-content:space-between;align-items:center;font-size:12px;margin:7px 0}
+.progress{height:11px;background:#e9edf7;border-radius:20px;overflow:hidden}
+.progress i{display:block;height:100%;width:0;background:linear-gradient(90deg,#27b9a5,#64cbb4);border-radius:20px;transition:width .25s}
+.action-card{display:flex;flex-direction:column;justify-content:center;align-items:flex-start;background:linear-gradient(145deg,#315fce,#5488ed);color:#fff;min-height:205px;position:relative;overflow:hidden}
+.action-card:after{content:"◷";position:absolute;right:16px;bottom:-35px;font-size:145px;line-height:1;color:#ffffff18}
+.action-card h3{font-size:18px;margin:0 0 5px;position:relative;z-index:1}
+.action-card p{font-size:12px;color:#e2eaff;margin:0 0 19px;position:relative;z-index:1}
+.action-card .primary{background:white;color:#2e5fc8;position:relative;z-index:1}
+.primary,.secondary,.danger,.ghost{border:0;border-radius:12px;padding:11px 16px;font-weight:750;transition:transform .12s,filter .12s}
+.primary{background:linear-gradient(110deg,#356fe5,#5488ee);color:white;box-shadow:0 5px 13px #356fe52b}
+.secondary{background:#eef2ff;color:#355fc3}
+.ghost{background:#f6f7fb;color:#596580}
+.danger{background:#fff0f0;color:#b84654}
+button:active{transform:translateY(1px)}
+.full{width:100%}
+.task-list{display:flex;flex-direction:column}
+.task{display:flex;align-items:center;gap:12px;padding:13px 8px;border-top:1px solid var(--line);border-left:4px solid var(--subject-color,#9aa6bd);min-width:0;border-radius:5px}
+.task:first-child{border-top:0}
+.task-check{width:21px;height:21px;accent-color:#3977e7;flex:none}
+.task-info{flex:1;min-width:0}
+.task-info strong{display:block;font-size:14px;overflow-wrap:anywhere}
+.task-info small{display:block;color:var(--muted);font-size:11px;margin-top:3px}
+.task.done .task-info{opacity:.5;text-decoration:line-through}
+.task-actions{display:flex;gap:6px;align-items:center}
+.task-actions button{padding:7px 9px;font-size:11px}
+.pill{display:inline-flex;align-items:center;background:#edf2ff;color:#4266bf;padding:4px 9px;border-radius:20px;font-size:11px;font-weight:700}
+.subject-tag{display:inline-flex;align-items:center;gap:6px;color:var(--subject-color);font-weight:800}
+.subject-tag:before{content:"";width:9px;height:9px;border-radius:50%;background:var(--subject-color);display:inline-block;flex:none}
+.plan-task{border-left:4px solid var(--subject-color);padding-left:10px!important;margin-left:10px!important}
+.empty{padding:20px 8px;text-align:center;color:#8a93a9;font-size:13px}
+.field-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}
+.field{min-width:0}
+label{display:block;font-size:12px;color:#64708b;font-weight:700;margin:0 0 6px}
+input,select{width:100%;min-width:0;border:1px solid #dfe5f1;background:#fff;border-radius:11px;padding:11px 12px;color:var(--ink)}
+input[type=checkbox]{width:18px;height:18px;accent-color:#3d75e3}
+.form-row{display:flex;gap:10px;align-items:end}
+.form-row>*{flex:1;min-width:0}
+.weekdays{display:flex;flex-wrap:wrap;gap:7px}
+.day-choice{display:flex;align-items:center;gap:5px;background:#f4f6fc;border-radius:10px;padding:8px 10px;font-size:12px;color:#53607e}
+.day-choice input{width:15px;height:15px}
+.subject-editor{display:grid;grid-template-columns:1fr 1.35fr .75fr 38px;gap:8px;align-items:center;margin:9px 0}
+.subject-editor input,.subject-editor select{padding:9px;font-size:13px}
+.remove-subject{height:38px;border:0;border-radius:10px;background:#fff0f0;color:#b84654;font-weight:800}
+.subject-editor{grid-template-columns:1fr 1.05fr .62fr .78fr .95fr 38px}
+.manual-entry{display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:9px;align-items:end}
+.countdown-settings{max-width:260px;margin:16px auto 0;text-align:left}
+@media(max-width:560px){.subject-editor{grid-template-columns:1fr 1fr}.subject-editor .remove-subject{grid-column:2}.manual-entry{grid-template-columns:1fr 1fr}.manual-entry button{grid-column:1/-1}}
+.form-hint,.muted{color:var(--muted);font-size:12px;line-height:1.7}
+.plan-day{margin:12px 0;border:1px solid var(--line);border-radius:15px;overflow:hidden}
+.calendar-toolbar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px}
+.calendar-toolbar strong{font-size:17px}
+.calendar-nav{display:flex;gap:7px}
+.calendar-nav button{border:0;border-radius:10px;background:#eef2ff;color:#355fc3;padding:9px 13px;font-weight:800}
+.calendar-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}
+.calendar-weekday{text-align:center;color:#7a849d;font-size:11px;font-weight:800;padding:5px 0}
+.calendar-day{min-width:0;min-height:76px;border:1px solid #e8ecf6;background:#fff;border-radius:12px;padding:7px 5px;text-align:left;color:var(--ink);display:flex;flex-direction:column;gap:5px}
+.calendar-day.muted-day{opacity:.35;background:#f8f9fc}.calendar-day.today{border-color:#6c95ed;background:#f3f6ff}.calendar-day.selected{box-shadow:inset 0 0 0 2px #3975e5;background:#edf3ff}
+.calendar-day .day-number{font-size:12px;font-weight:800}.calendar-day .day-dots{display:flex;gap:3px;flex-wrap:wrap}.calendar-day .day-dot{width:7px;height:7px;border-radius:50%;background:#5b8df1}.calendar-day .day-dot.done-dot{background:#25b49e}
+.calendar-day .day-count{font-size:9px;color:#6b7691;overflow:hidden;white-space:nowrap}
+.calendar-selected-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:18px 0 8px}.calendar-selected-head h3{margin:0;font-size:15px}
+@media(max-width:560px){.calendar-grid{gap:3px}.calendar-day{min-height:57px;padding:5px 3px;border-radius:8px}.calendar-day .day-count{font-size:8px}.calendar-day .day-number{font-size:11px}.calendar-day .day-dot{width:6px;height:6px}}
+.plan-day-head{background:#f5f7ff;padding:11px 14px;font-weight:800;font-size:13px;display:flex;justify-content:space-between}
+.plan-day .task{padding:10px 14px;margin:0 12px}
+.timer-card{text-align:center;padding:26px 20px}
+.timer-modes{display:flex;justify-content:center;gap:7px;flex-wrap:wrap}
+.timer-mode{border:1px solid #e1e7f4;background:#f7f8fc;color:#596580;padding:9px 15px;border-radius:22px;font-size:12px;font-weight:750}
+.timer-mode.active{background:#eaf0ff;color:#285fcf;border-color:#a9c1ff}
+.timer-ring{width:min(290px,72vw);aspect-ratio:1;margin:23px auto 18px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(#3e78e8 var(--ring,0%),#e8edf8 0);padding:11px}
+.timer-inner{width:100%;height:100%;border-radius:50%;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:inset 0 0 0 1px #edf0f7}
+.clock{font-size:clamp(43px,8vw,64px);font-weight:800;letter-spacing:1px;font-variant-numeric:tabular-nums;line-height:1.1}
+.timer-status{font-size:13px;color:#64708b;margin-top:8px;font-weight:700}
+.timer-controls{display:flex;justify-content:center;gap:9px;flex-wrap:wrap;margin:15px 0 20px}
+.timer-controls button{min-width:112px}
+.timer-subject{max-width:310px;margin:0 auto;text-align:left}
+.stats-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.stat-box{background:#f5f7ff;border-radius:14px;padding:15px;text-align:center}
+.stat-box strong{display:block;font-size:25px;line-height:1.3}
+.stat-box span{font-size:11px;color:var(--muted)}
+.chart{display:flex;align-items:flex-end;gap:10px;height:175px;padding:10px 5px 0;border-bottom:1px solid var(--line)}
+.chart-col{flex:1;min-width:0;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:6px}
+.chart-bar{width:min(32px,75%);min-height:3px;border-radius:7px 7px 0 0;background:linear-gradient(180deg,#70a2f3,#3976df)}
+.chart-col small{font-size:10px;color:#7b849b}
+.chart-col em{font-size:9px;color:#73809c;font-style:normal}
+.subject-row{display:grid;grid-template-columns:85px 1fr 48px;gap:9px;align-items:center;margin:13px 0;font-size:12px}
+.subject-track{height:9px;background:#edf0f7;border-radius:20px;overflow:hidden}
+.subject-track i{display:block;height:100%;border-radius:20px;background:linear-gradient(90deg,#48b8a5,#4386e9)}
+.history-item{display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-top:1px solid var(--line);font-size:13px}
+.history-item:first-child{border-top:0}
+.settings-note{background:#f4f7ff;border:1px solid #e4eaff;padding:14px;border-radius:13px}
+hr{border:0;border-top:1px solid var(--line);margin:18px 0}
+footer{text-align:center;color:#9aa2b5;font-size:11px;padding:22px 0 0}
+.toast{position:fixed;left:50%;bottom:22px;transform:translate(-50%,20px);opacity:0;pointer-events:none;background:#1e2c53;color:white;padding:11px 17px;border-radius:12px;font-size:13px;box-shadow:var(--shadow);transition:.2s;z-index:10}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+@media(max-width:800px){
+ .app-shell{padding:18px 16px 32px}.layout{grid-template-columns:1fr;gap:12px}
+ .sidebar{position:sticky;top:0;z-index:5;display:flex;overflow-x:auto;padding:7px;border-radius:15px}
+ .nav-btn{width:auto;flex:none;justify-content:center;padding:10px 12px;font-size:12px;margin:0;gap:6px}
+ .nav-btn .nav-icon{font-size:16px;width:auto}.sidebar-note{display:none}
+}
+@media(max-width:560px){
+ .app-shell{padding:14px 11px 26px}.brand{padding:0 4px;margin-bottom:14px;gap:10px}
+ .brand-mark{width:43px;height:43px;font-size:22px;border-radius:13px}
+ .brand p{font-size:11px}.brand-date{font-size:10px}
+ .nav-btn{flex-direction:column;gap:2px;padding:7px 11px;font-size:10px;min-width:55px}
+ .nav-btn .nav-icon{font-size:17px}
+ .page-head h2{font-size:20px}.card{padding:16px;border-radius:17px}
+ .home-grid{grid-template-columns:1fr}.action-card{min-height:175px}
+ .summary-numbers{margin:14px 0}.metric strong{font-size:26px}
+ .field-grid{grid-template-columns:1fr}.subject-editor{grid-template-columns:1fr 1fr .85fr 34px;gap:5px}
+ .subject-editor input,.subject-editor select{font-size:11px;padding:9px 6px}
+ .stats-grid{gap:6px}.stat-box{padding:12px 5px}.stat-box strong{font-size:21px}
+ .task{gap:8px}.task-actions{flex-direction:column}
+ .timer-card{padding:22px 12px}.timer-controls button{min-width:0;flex:1}
+}
+</style>
+</head>
+<body>
+<div class="app-shell">
+ <header class="brand">
+  <div class="brand-mark" aria-hidden="true">✦</div>
+  <div><h1>StudyFlow</h1><p>計画から、続く。あなたのためのスマートな学習パートナー</p></div>
+  <div class="brand-date" id="headerDate"></div>
+ </header>
+ <div class="layout">
+  <nav class="sidebar" aria-label="メインメニュー">
+   <button class="nav-btn active" data-page="home"><span class="nav-icon">⌂</span>ホーム</button>
+   <button class="nav-btn" data-page="plan"><span class="nav-icon">▦</span>学習計画</button>
+   <button class="nav-btn" data-page="calendar"><span class="nav-icon">▤</span>カレンダー</button>
+   <button class="nav-btn" data-page="timer"><span class="nav-icon">◷</span>タイマー</button>
+   <button class="nav-btn" data-page="tasks"><span class="nav-icon">☷</span>タスク管理</button>
+   <button class="nav-btn" data-page="stats"><span class="nav-icon">▥</span>勉強記録</button>
+  </nav>
+  <main>
+   <section id="home" class="page active">
+    <div class="page-head"><div><p class="hello" id="greeting">こんにちは！</p><h2>今日も一歩ずつ進めよう ✨</h2></div></div>
+    <div class="home-grid">
+     <article class="card summary-card">
+      <div class="summary-top"><h3>今日の学習サマリー</h3><span class="pill">TODAY</span></div>
+      <div class="summary-numbers">
+       <div class="metric"><strong id="todayTime">0分</strong><span>今日の勉強時間</span></div>
+       <div class="metric"><strong id="goalTime">60分</strong><span>1日の目標</span></div>
+      </div>
+      <div class="progress-head"><b>タスク達成率</b><strong id="completionText">0%</strong></div>
+      <div class="progress"><i id="completionBar"></i></div>
+      <p class="muted" id="taskCountText">今日のタスク 0件</p>
+     </article>
+     <article class="card action-card">
+      <h3>さあ、勉強を始めよう</h3><p>集中できる時間を、今日の積み重ねに。</p>
+      <button class="primary" id="homeStart">▶　勉強を始める</button>
+     </article>
+    </div>
+    <article class="card"><h3>今日の勉強タスク</h3><div id="todayTasks" class="task-list"></div></article>
+   </section>
+
+   <section id="plan" class="page">
+    <div class="page-head"><div><h2>学習計画</h2><p>教科ごとのテスト日から逆算して、毎日の学習を自動で組み立てます。</p></div></div>
+    <article class="card">
+     <h3>① 計画の条件</h3>
+     <div class="field-grid">
+      <div class="field"><label for="daily">1日の目標勉強時間（分）</label><input type="number" id="daily" min="10" max="600" value="60"><p class="form-hint">ホーム画面に表示する1日の目標にも反映されます。</p></div>
+      <div class="field"><label for="session">1回あたりの学習時間（分）</label><input type="number" id="session" min="5" max="180" value="25"></div>
+      <div class="field"><label for="bufferPercent">予備時間（必要時間に対する割合）</label><div class="form-row"><input type="number" id="bufferPercent" min="0" max="100" value="20"><span class="pill">％</span></div></div>
+     </div>
+     <p class="form-hint">予備時間は復習・遅れの調整用です。初期設定は必要勉強時間の20％です。</p>
+     <label style="margin-top:17px">勉強する曜日</label><div class="weekdays" id="weekdayChoices"></div>
+    </article>
+    <article class="card">
+     <h3>② 教科と勉強範囲</h3>
+     <div id="subjectRows"></div>
+     <button class="secondary" id="addSubject">＋ 教科・範囲を追加</button>
+     <p class="form-hint">教科ごとに必要な総勉強時間とテスト日を入力してください。設定した時間に予備時間を加え、テスト日までの勉強可能な曜日へ割り振ります。テスト当日は原則として計画に含めません。</p>
+    </article>
+    <article class="card">
+     <button class="primary full" id="makePlan">✦　おすすめの学習計画を作成</button>
+     <p class="muted" id="planMessage" aria-live="polite"></p>
+     <div id="planCandidates" aria-live="polite"></div>
+    </article>
+    <article class="card"><h3>作成した計画</h3><div id="planPreview"></div></article>
+    <article class="card">
+     <h3>データについて</h3>
+     <div class="settings-note muted">学習計画・タスク・勉強記録は、現在使用中のブラウザ内にのみ保存されます。サーバーには送信されません。ブラウザのサイトデータ削除や機種変更時には引き継がれないため注意してください。</div>
+     <hr><h3>すべてのデータを削除</h3>
+     <p class="muted">登録したタスク、学習計画、勉強記録を削除します。この操作は取り消せません。</p>
+     <button class="danger" id="clearData">すべてのデータを削除</button>
+    </article>
+   </section>
+
+   <section id="calendar" class="page">
+    <div class="page-head"><div><h2>学習カレンダー</h2><p>日付を選ぶと、その日の勉強タスクを確認できます。</p></div></div>
+    <article class="card">
+     <div class="calendar-toolbar"><div class="calendar-nav"><button id="calendarPrev" aria-label="前月">‹</button><button id="calendarToday">今日</button><button id="calendarNext" aria-label="翌月">›</button></div><strong id="calendarMonth"></strong></div>
+     <div class="calendar-grid" id="calendarGrid"></div>
+     <div class="muted" style="margin-top:12px">● 教科ごとに色分け　<span style="color:#25b49e">●</span> 完了タスク</div>
+     <div class="calendar-selected-head"><h3 id="selectedDateTitle">選択した日のタスク</h3><button class="secondary" id="calendarAddTask">＋ この日に追加</button></div>
+     <div id="calendarDayTasks" class="task-list"></div>
+    </article>
+   </section>
+
+   <section id="timer" class="page">
+    <div class="page-head"><div><h2>勉強タイマー</h2><p>集中する時間を計測して、自動で勉強記録に保存します。</p></div></div>
+    <article class="card timer-card">
+     <div class="timer-modes">
+      <button class="timer-mode active" data-mode="pomodoro">ポモドーロ（25分）</button>
+      <button class="timer-mode" data-mode="up">カウントアップ</button>
+      <button class="timer-mode" data-mode="down">カウントダウン</button>
+     </div>
+     <div class="countdown-settings" id="countdownSettings" hidden><label for="countdownMinutes">カウントダウン時間（分）</label><input type="number" id="countdownMinutes" min="1" max="600" value="30"></div>
+     <div class="timer-ring" id="timerRing"><div class="timer-inner">
+      <div class="clock" id="clock">25:00</div><div class="timer-status" id="timerStatus">開始前</div>
+     </div></div>
+     <div class="timer-controls">
+      <button class="primary" id="startTimer">▶　開始</button>
+      <button class="secondary" id="pauseTimer" disabled>一時停止</button>
+      <button class="secondary" id="finishTimer" disabled>終了して記録</button>
+      <button class="ghost" id="resetTimer">リセット</button>
+     </div>
+     <div class="timer-subject"><label for="timerSubject">勉強する教科</label><input id="timerSubject" list="subjectOptions" placeholder="例：数学"><datalist id="subjectOptions"></datalist></div>
+     <p class="muted" id="timerMessage">モードを選んで「開始」を押してください。</p>
+    </article>
+   </section>
+
+   <section id="tasks" class="page">
+    <div class="page-head"><div><h2>タスク管理</h2><p>やることを整理して、終わったらチェック。</p></div></div>
+    <article class="card">
+     <h3>タスクを追加</h3>
+     <div class="field-grid">
+      <div class="field"><label for="newSubject">教科</label><input id="newSubject" placeholder="数学"></div>
+      <div class="field"><label for="newTitle">勉強する内容・範囲</label><input id="newTitle" placeholder="一次関数の問題集 p.20"></div>
+      <div class="field"><label for="newDate">予定日</label><input type="date" id="newDate"></div>
+      <div class="field"><label for="newMinutes">目安時間（分）</label><input type="number" id="newMinutes" min="1" max="600" value="25"></div>
+     </div>
+     <button class="primary" id="addTask" style="margin-top:15px">＋ タスクを追加</button>
+    </article>
+    <article class="card"><h3>タスク一覧</h3><div id="taskList"></div></article>
+   </section>
+
+   <section id="stats" class="page">
+    <div class="page-head"><div><h2>勉強記録</h2><p>積み重ねた時間を振り返ろう。</p></div></div>
+    <div class="card"><div class="stats-grid">
+     <div class="stat-box"><strong id="totalTime">0分</strong><span>累計勉強時間</span></div>
+     <div class="stat-box"><strong id="totalSessions">0</strong><span>学習回数</span></div>
+     <div class="stat-box"><strong id="totalTasks">0</strong><span>完了タスク</span></div>
+    </div></div>
+    <article class="card">
+     <h3>勉強時間を手入力</h3>
+     <p class="muted">タイマーを使わなかった勉強時間も記録できます。</p>
+     <div class="manual-entry">
+      <div><label for="manualDate">勉強した日</label><input type="date" id="manualDate"></div>
+      <div><label for="manualSubject">教科</label><input id="manualSubject" list="subjectOptions" placeholder="数学"></div>
+      <div><label for="manualMinutes">勉強時間（分）</label><input type="number" id="manualMinutes" min="1" max="1440" placeholder="30"></div>
+      <button class="primary" id="addManualLog">記録する</button>
+     </div>
+    </article>
+    <article class="card"><h3>日ごとの勉強時間（直近7日）</h3><div id="dailyChart" class="chart"></div></article>
+    <article class="card"><h3>教科ごとの勉強時間</h3><div id="subjectStats"></div></article>
+    <article class="card"><h3>最近の学習履歴</h3><div id="recentLogs"></div></article>
+   </section>
+
+
+  </main>
+ </div>
+ <footer>StudyFlow · Your study, your flow.</footer>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script>
+'use strict';
+const $ = id => document.getElementById(id);
+const STORAGE_KEY = 'studyflow_data_v2';
+const DAY_NAMES = ['日','月','火','水','木','金','土'];
+const localDate = (date = new Date()) => {
+ const y=date.getFullYear(), m=String(date.getMonth()+1).padStart(2,'0'), d=String(date.getDate()).padStart(2,'0');
+ return `${y}-${m}-${d}`;
+};
+const parseLocalDate = value => { const [y,m,d]=value.split('-').map(Number); return new Date(y,m-1,d,12,0,0,0); };
+const uid = () => (crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random().toString(16).slice(2)}`);
+const escapeHTML = value => String(value ?? '').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const blankData = () => ({tasks:[],logs:[],goalMinutes:60,plan:{daily:60,session:25,weekdays:[1,2,3,4,5,6],subjects:[]}});
+function loadData(){
+ try{
+  const raw=localStorage.getItem(STORAGE_KEY) || localStorage.getItem('studyflow_data');
+  if(!raw)return blankData();
+  const parsed=JSON.parse(raw), base=blankData();
+  const logs=(Array.isArray(parsed.logs)?parsed.logs:[]).map(l=>({...l,seconds:Number.isFinite(l.seconds)?l.seconds:Math.max(0,Number(l.minutes)||0)*60}));
+  return {...base,...parsed,tasks:Array.isArray(parsed.tasks)?parsed.tasks:[],logs,plan:{...base.plan,...(parsed.plan||{})}};
+ }catch(e){console.warn('保存データを読み込めませんでした',e);return blankData();}
+}
+let data=loadData();
+function persist(){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(data));}catch(e){toast('保存できませんでした。ブラウザの空き容量を確認してください。');}}
+function toast(message){const el=$('toast');el.textContent=message;el.classList.add('show');clearTimeout(toast._timer);toast._timer=setTimeout(()=>el.classList.remove('show'),2300);}
+function formatDuration(seconds){
+ const mins=Math.floor(Math.max(0,seconds)/60), h=Math.floor(mins/60), m=mins%60;
+ return h?`${h}時間${m}分`:`${mins}分`;
+}
+function todayLogsSeconds(){return data.logs.filter(l=>l.date===localDate()).reduce((s,l)=>s+(l.seconds||0),0);}
+const SUBJECT_COLORS=['#3976df','#e58b32','#24a58f','#9a68cf','#d45b83','#b39a27','#3b9bb8','#7a83a8'];
+function subjectColor(subject){
+ const text=String(subject||'その他');let hash=0;
+ for(let i=0;i<text.length;i++)hash=(hash*31+text.charCodeAt(i))>>>0;
+ return SUBJECT_COLORS[hash%SUBJECT_COLORS.length];
+}
+function taskMarkup(t){
+ const color=subjectColor(t.subject);
+ return `<div class="task ${t.done?'done':''}" style="--subject-color:${color}">
+  <input class="task-check" type="checkbox" aria-label="タスク完了" data-toggle="${escapeHTML(t.id)}" ${t.done?'checked':''}>
+  <div class="task-info"><strong>${escapeHTML(t.title)}</strong><small><span class="subject-tag" style="--subject-color:${color}">${escapeHTML(t.subject||'その他')}</span> · ${escapeHTML(t.date)} · 目安 ${Number(t.minutes)||0}分</small></div>
+  <div class="task-actions"><button class="danger" data-delete="${escapeHTML(t.id)}">削除</button></div>
+ </div>`;
+}
+function renderTasks(){
+ const today=localDate(), todays=data.tasks.filter(t=>t.date===today);
+ $('todayTasks').innerHTML=todays.length?todays.map(taskMarkup).join(''):'<div class="empty">今日のタスクはありません。学習計画またはタスク管理から追加できます。</div>';
+ const sorted=[...data.tasks].sort((a,b)=>a.date.localeCompare(b.date)||(a.done-b.done));
+ $('taskList').innerHTML=sorted.length?sorted.map(taskMarkup).join(''):'<div class="empty">タスクはまだありません。</div>';
+ const done=todays.filter(t=>t.done).length, pct=todays.length?Math.round(done/todays.length*100):0;
+ $('completionText').textContent=pct+'%';$('completionBar').style.width=pct+'%';
+ $('taskCountText').textContent=`今日のタスク ${todays.length}件（完了 ${done}件）`;
+}
+function renderPlanPreview(){
+ const future=data.tasks.filter(t=>!t.manual).sort((a,b)=>a.date.localeCompare(b.date));
+ if(!future.length){$('planPreview').innerHTML='<div class="empty">まだ計画はありません。条件と教科を入力して自動作成してください。</div>';return;}
+ const groups={};future.forEach(t=>(groups[t.date]??=[]).push(t));
+ const totals={};future.forEach(t=>{const k=t.subject||'その他';totals[k]??={planned:0,buffer:0};totals[k].planned+=Number(t.minutes)||0;if(t.buffer)totals[k].buffer+=Number(t.minutes)||0;});
+ const summary=`<div class="settings-note muted" style="margin-bottom:13px"><b>教科ごとの割り振り</b><br>${Object.entries(totals).map(([name,v])=>`${escapeHTML(name)}：合計${v.planned}分（うち予備${v.buffer}分）`).join('<br>')}</div>`;
+ $('planPreview').innerHTML=summary+Object.entries(groups).slice(0,14).map(([date,tasks])=>`<div class="plan-day"><div class="plan-day-head"><span>${escapeHTML(date)}（${DAY_NAMES[parseLocalDate(date).getDay()]}）</span><span>${tasks.reduce((s,t)=>s+(+t.minutes||0),0)}分</span></div>${tasks.map(t=>`<div class="task plan-task" style="--subject-color:${subjectColor(t.subject)}"><div class="task-info"><strong><span class="subject-tag">${escapeHTML(t.subject)}</span>｜${escapeHTML(t.title)}</strong><small>約${t.minutes}分 · ${escapeHTML(t.priority||'通常')}</small></div></div>`).join('')}</div>`).join('')+(Object.keys(groups).length>14?'<p class="muted">以降の日程はタスク管理で確認できます。</p>':'');
+}
+let calendarCursor=new Date();calendarCursor.setDate(1);
+let selectedCalendarDate=localDate();
+function renderCalendar(){
+ const year=calendarCursor.getFullYear(),month=calendarCursor.getMonth();
+ $('calendarMonth').textContent=`${year}年${month+1}月`;
+ const first=new Date(year,month,1),start=new Date(year,month,1-first.getDay());
+ const cells=[];
+ for(let i=0;i<42;i++){
+  const d=new Date(start);d.setDate(start.getDate()+i);const key=localDate(d);
+  const tasks=data.tasks.filter(t=>t.date===key),done=tasks.filter(t=>t.done).length;
+  const dots=tasks.slice(0,5).map(t=>`<i class="day-dot ${t.done?'done-dot':''}" style="background:${t.done?'#25b49e':subjectColor(t.subject)}" title="${escapeHTML(t.subject||'その他')}"></i>`).join('');
+  cells.push(`<button type="button" class="calendar-day ${d.getMonth()!==month?'muted-day':''} ${key===localDate()?'today':''} ${key===selectedCalendarDate?'selected':''}" data-calendar-date="${key}" aria-label="${key}、タスク${tasks.length}件"><span class="day-number">${d.getDate()}</span><span class="day-dots">${dots}</span><span class="day-count">${tasks.length?`${done}/${tasks.length} 完了`:''}</span></button>`);
+ }
+ $('calendarGrid').innerHTML=DAY_NAMES.map(d=>`<div class="calendar-weekday">${d}</div>`).join('')+cells.join('');
+ const selected=parseLocalDate(selectedCalendarDate);
+ $('selectedDateTitle').textContent=`${selected.getMonth()+1}月${selected.getDate()}日（${DAY_NAMES[selected.getDay()]}）のタスク`;
+ const tasks=data.tasks.filter(t=>t.date===selectedCalendarDate).sort((a,b)=>a.done-b.done);
+ $('calendarDayTasks').innerHTML=tasks.length?tasks.map(taskMarkup).join(''):'<div class="empty">この日のタスクはありません。</div>';
+}
+document.addEventListener('click',e=>{
+ const date=e.target.closest('[data-calendar-date]')?.dataset.calendarDate;
+ if(date){selectedCalendarDate=date;const d=parseLocalDate(date);calendarCursor=new Date(d.getFullYear(),d.getMonth(),1);renderCalendar();}
+});
+$('calendarPrev').addEventListener('click',()=>{calendarCursor.setMonth(calendarCursor.getMonth()-1);renderCalendar();});
+$('calendarNext').addEventListener('click',()=>{calendarCursor.setMonth(calendarCursor.getMonth()+1);renderCalendar();});
+$('calendarToday').addEventListener('click',()=>{selectedCalendarDate=localDate();calendarCursor=new Date();calendarCursor.setDate(1);renderCalendar();});
+$('calendarAddTask').addEventListener('click',()=>{$('newDate').value=selectedCalendarDate;showPage('tasks');$('newTitle').focus();});
+
+function renderStats(){
+ const total=data.logs.reduce((s,l)=>s+(l.seconds||0),0);
+ $('totalTime').textContent=formatDuration(total);$('totalSessions').textContent=data.logs.length;
+ $('totalTasks').textContent=data.tasks.filter(t=>t.done).length;
+ const days=[];for(let i=6;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);const key=localDate(d);days.push({key,label:`${d.getMonth()+1}/${d.getDate()}`,seconds:data.logs.filter(l=>l.date===key).reduce((s,l)=>s+(l.seconds||0),0)});}
+ const max=Math.max(3600,...days.map(d=>d.seconds));
+ $('dailyChart').innerHTML=days.map(d=>`<div class="chart-col"><em>${d.seconds?formatDuration(d.seconds):' '}</em><div class="chart-bar" style="height:${Math.max(2,d.seconds/max*100)}%"></div><small>${d.label}</small></div>`).join('');
+ const subjects={};data.logs.forEach(l=>{const key=l.subject||'その他';subjects[key]=(subjects[key]||0)+(l.seconds||0);});
+ const entries=Object.entries(subjects).sort((a,b)=>b[1]-a[1]), maxSubject=Math.max(1,...entries.map(x=>x[1]));
+ $('subjectStats').innerHTML=entries.length?entries.map(([name,sec])=>`<div class="subject-row"><b class="subject-tag" style="--subject-color:${subjectColor(name)}">${escapeHTML(name)}</b><div class="subject-track"><i style="width:${sec/maxSubject*100}%;background:${subjectColor(name)}"></i></div><strong>${formatDuration(sec)}</strong></div>`).join(''):'<div class="empty">学習記録はまだありません。</div>';
+ $('recentLogs').innerHTML=data.logs.length?[...data.logs].sort((a,b)=>(b.startedAt||'').localeCompare(a.startedAt||'')).slice(0,10).map(l=>`<div class="history-item"><span><b>${escapeHTML(l.subject||'その他')}</b><br><small class="muted">${escapeHTML(l.date)} · ${escapeHTML(l.mode||'学習')}</small></span><strong>${formatDuration(l.seconds||0)}</strong></div>`).join(''):'<div class="empty">記録はまだありません。</div>';
+}
+function render(){
+ const today=localDate(), now=new Date();
+ $('headerDate').textContent=`${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日（${DAY_NAMES[now.getDay()]}）`;
+ $('greeting').textContent=now.getHours()<11?'おはようございます！':now.getHours()<18?'こんにちは！':'こんばんは！';
+ $('todayTime').textContent=formatDuration(todayLogsSeconds());$('goalTime').textContent=formatDuration((data.goalMinutes||60)*60);
+ renderTasks();renderStats();renderPlanPreview();renderCalendar();
+ const subjects=[...new Set(data.tasks.map(t=>t.subject).filter(Boolean))];
+ $('subjectOptions').innerHTML=subjects.map(s=>`<option value="${escapeHTML(s)}"></option>`).join('');
+}
+function showPage(page){
+ document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p.id===page));
+ document.querySelectorAll('.nav-btn').forEach(b=>b.classList.toggle('active',b.dataset.page===page));
+ window.scrollTo({top:0,behavior:'smooth'});render();
+}
+document.querySelectorAll('.nav-btn').forEach(b=>b.addEventListener('click',()=>showPage(b.dataset.page)));
+function addTask({subject,title,date,minutes,priority='通常',manual=true,buffer=false}){
+ data.tasks.push({id:uid(),subject:subject||'その他',title,date,minutes,priority,manual,buffer,done:false});
+}
+$('addTask').addEventListener('click',()=>{
+ const title=$('newTitle').value.trim();if(!title){toast('勉強する内容を入力してください');$('newTitle').focus();return;}
+ const minutes=Math.max(1,Math.min(600,Number($('newMinutes').value)||25));
+ addTask({subject:$('newSubject').value.trim()||'その他',title,date:$('newDate').value||localDate(),minutes});
+ $('newTitle').value='';$('newSubject').value='';persist();render();toast('タスクを追加しました');
+});
+document.addEventListener('change',e=>{
+ const id=e.target.dataset.toggle;if(!id)return;
+ const task=data.tasks.find(t=>t.id===id);if(task){task.done=e.target.checked;persist();render();}
+});
+document.addEventListener('click',e=>{
+ const id=e.target.dataset.delete;if(!id)return;
+ data.tasks=data.tasks.filter(t=>t.id!==id);persist();render();toast('タスクを削除しました');
+});
+function addSubjectRow(subject='',range='',priority='中',testDate='',totalMinutes=120){
+ const row=document.createElement('div');row.className='subject-editor';
+ row.innerHTML=`<input aria-label="教科名" placeholder="教科（例：数学）" value="${escapeHTML(subject)}"><input aria-label="勉強範囲" placeholder="範囲（例：一次関数）" value="${escapeHTML(range)}"><select aria-label="優先度"><option ${priority==='高'?'selected':''}>高</option><option ${priority==='中'?'selected':''}>中</option><option ${priority==='低'?'selected':''}>低</option></select><input type="number" min="1" max="100000" aria-label="必要な総勉強時間（分）" title="必要な総勉強時間（分）" placeholder="総分数" value="${Math.max(1,Number(totalMinutes)||120)}"><input type="date" aria-label="この教科のテスト日" title="この教科のテスト日" value="${escapeHTML(testDate)}"><button type="button" class="remove-subject" aria-label="この教科を削除">×</button>`;
+ row.querySelector('button').addEventListener('click',()=>{if($('subjectRows').children.length>1)row.remove();else toast('教科は1件以上登録してください');});
+ $('subjectRows').appendChild(row);
+}
+$('addSubject').addEventListener('click',()=>addSubjectRow());
+$('weekdayChoices').innerHTML=DAY_NAMES.map((d,i)=>`<label class="day-choice"><input type="checkbox" value="${i}" ${i!==0?'checked':''}>${d}曜</label>`).join('');
+function initPlanForm(){
+ $('daily').value=data.plan.daily||data.goalMinutes||60;$('session').value=data.plan.session||25;
+ $('bufferPercent').value=Number.isFinite(data.plan.bufferPercent)?data.plan.bufferPercent:20;
+ $('weekdayChoices').querySelectorAll('input').forEach(input=>input.checked=(data.plan.weekdays||[1,2,3,4,5,6]).includes(+input.value));
+ $('subjectRows').innerHTML='';
+ const subjects=data.plan.subjects?.length?data.plan.subjects:[
+  {subject:'数学',range:'今日の復習',priority:'高',testDate:localDate(new Date(Date.now()+14*86400000)),totalMinutes:300},
+  {subject:'英語',range:'単語・文法',priority:'中',testDate:localDate(new Date(Date.now()+21*86400000)),totalMinutes:240}
+ ];
+ subjects.forEach(s=>addSubjectRow(s.subject,s.range,s.priority,s.testDate||'',s.totalMinutes||120));
+}
+let pendingPlanCandidates=[];
+function collectPlanInputs(){
+ const today=parseLocalDate(localDate());
+ const weekdays=[...$('weekdayChoices').querySelectorAll('input:checked')].map(x=>+x.value);
+ if(!weekdays.length)throw new Error('勉強する曜日を1つ以上選んでください。');
+ const subjects=[...$('subjectRows').children].map(row=>{
+  const inputs=row.querySelectorAll('input');
+  return {subject:inputs[0].value.trim(),range:inputs[1].value.trim(),priority:row.querySelector('select').value,
+   totalMinutes:Math.max(0,Number(inputs[2].value)||0),testDate:inputs[3].value};
+ }).filter(s=>s.subject||s.range);
+ if(!subjects.length||subjects.some(s=>!s.subject||!s.range))throw new Error('すべての教科について、教科名と勉強範囲を入力してください。');
+ const invalid=subjects.find(s=>!s.testDate||parseLocalDate(s.testDate)<=today);
+ if(invalid)throw new Error(`「${invalid.subject}」のテスト日は明日以降の日付にしてください。`);
+ const noTime=subjects.find(s=>!Number.isFinite(s.totalMinutes)||s.totalMinutes<=0);
+ if(noTime)throw new Error(`「${noTime.subject}」の必要な総勉強時間を1分以上で入力してください。`);
+ const daily=Math.max(10,Math.min(600,Number($('daily').value)||60));
+ const session=Math.max(5,Math.min(180,Number($('session').value)||25));
+ const bufferPercent=Math.max(0,Math.min(100,Number($('bufferPercent').value)||0));
+ subjects.forEach(s=>{s.bufferMinutes=Math.ceil(s.totalMinutes*bufferPercent/100);});
+ const maxDate=subjects.reduce((max,s)=>s.testDate>max?s.testDate:max,'');
+ const dates=[];
+ for(let d=new Date(today);localDate(d)<maxDate;d.setDate(d.getDate()+1)){
+  if(weekdays.includes(d.getDay()))dates.push(localDate(d));
+ }
+ if(!dates.length)throw new Error('テスト日前に勉強できる曜日がありません。曜日設定を見直してください。');
+ for(const deadline of [...new Set(subjects.map(s=>s.testDate))].sort()){
+  const due=subjects.filter(s=>s.testDate<=deadline);
+  const availableDays=dates.filter(d=>d<deadline).length;
+  const required=due.reduce((sum,s)=>sum+s.totalMinutes+s.bufferMinutes,0);
+  const capacity=availableDays*daily;
+  if(required>capacity)throw new Error(`${deadline}までの計画が入りきりません。必要時間（予備込み）${required}分に対し、確保できる時間は${capacity}分です。不足${required-capacity}分です。`);
+ }
+ return {subjects,daily,session,bufferPercent,weekdays,dates};
+}
+function buildPlanCandidate(input,kind){
+ const remaining=input.subjects.map(s=>({...s,baseRemaining:s.totalMinutes,bufferRemaining:s.bufferMinutes,remaining:s.totalMinutes+s.bufferMinutes}));
+ const tasks=[],priorityWeight={高:3,中:2,低:1};
+ const perDay={};
+ input.dates.forEach(date=>{
+  let capacity=input.daily,guard=0,rotation=0;perDay[date]={};
+  while(capacity>0&&guard++<3000){
+   const eligible=remaining.filter(s=>s.testDate>date&&s.remaining>0);
+   if(!eligible.length)break;
+   const ranked=[...eligible].sort((a,b)=>{
+    const daysA=Math.max(1,input.dates.filter(d=>d>=date&&d<a.testDate).length);
+    const daysB=Math.max(1,input.dates.filter(d=>d>=date&&d<b.testDate).length);
+    if(kind==='deadline')return a.testDate.localeCompare(b.testDate)||(priorityWeight[b.priority]-priorityWeight[a.priority]);
+    if(kind==='light')return (perDay[date][a.subject]||0)-(perDay[date][b.subject]||0)||a.testDate.localeCompare(b.testDate)||(priorityWeight[b.priority]-priorityWeight[a.priority]);
+    const urgencyA=priorityWeight[a.priority]*100+a.remaining/daysA;
+    const urgencyB=priorityWeight[b.priority]*100+b.remaining/daysB;
+    return urgencyB-urgencyA||a.testDate.localeCompare(b.testDate);
+   });
+   const shift=kind==='balanced'?rotation%ranked.length:0;
+   const ordered=ranked.slice(shift).concat(ranked.slice(0,shift));
+   let placed=0;
+   for(const s of ordered){
+    if(capacity<=0)break;
+    const isBuffer=s.baseRemaining<=0;
+    const bucket=isBuffer?'bufferRemaining':'baseRemaining';
+    if(s[bucket]<=0)continue;
+    const chunk=kind==='light'?Math.min(15,input.session):input.session;
+    const amount=Math.min(chunk,capacity,s[bucket]);
+    if(amount<=0)continue;
+    tasks.push({id:uid(),subject:s.subject,title:s.range+(isBuffer?'（予備時間）':''),date,minutes:amount,priority:s.priority,manual:false,buffer:isBuffer,done:false});
+    s[bucket]-=amount;s.remaining-=amount;capacity-=amount;
+    perDay[date][s.subject]=(perDay[date][s.subject]||0)+amount;placed++;
+   }
+   if(!placed)break;
+   rotation++;
+  }
+ });
+ const unfinished=remaining.filter(s=>s.remaining>0);
+ return {kind,tasks,unfinished,summary:remaining.map(s=>({subject:s.subject,total:s.totalMinutes+s.bufferMinutes,buffer:s.bufferMinutes,testDate:s.testDate}))};
+}
+function showPlanCandidates(candidates,input){
+ const labels={
+  balanced:{title:'バランス重視',desc:'教科が日ごとに偏りにくい、おすすめの標準プラン',tag:'おすすめ'},
+  deadline:{title:'テスト日優先',desc:'テスト日が近い教科・優先度の高い教科から進めるプラン',tag:'締切重視'},
+  light:{title:'こまめに分散',desc:'1回の学習を短めに区切り、複数教科を少しずつ進めるプラン',tag:'短時間型'}
+ };
+ $('planCandidates').innerHTML='<h3 style="margin:18px 0 10px">おすすめの計画を選んでください</h3>'+candidates.map((c,i)=>{
+  const meta=labels[c.kind],days=new Set(c.tasks.map(t=>t.date)).size,total=c.tasks.reduce((n,t)=>n+t.minutes,0);
+  return `<article class="card" style="border:1px solid ${i===0?'#8eabf4':'var(--line)'};margin:10px 0;padding:16px">
+   <div style="display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap"><strong>${meta.title}</strong><span class="pill">${meta.tag}</span></div>
+   <p class="muted" style="margin:5px 0 12px">${meta.desc}</p>
+   <div class="field-grid"><div><b>${days}日</b><small class="muted" style="display:block">学習する日</small></div><div><b>${total}分</b><small class="muted" style="display:block">計画に含む合計時間</small></div></div>
+   <p class="muted">教科ごとの配分：${c.summary.map(s=>`${escapeHTML(s.subject)} ${s.total}分（予備${s.buffer}分）`).join(' ／ ')}</p>
+   <button class="${i===0?'primary':'secondary'} full" data-choose-plan="${i}">この計画を選ぶ</button>
+  </article>`;
+ }).join('');
+ $('planCandidates').querySelectorAll('[data-choose-plan]').forEach(btn=>btn.addEventListener('click',()=>{
+  const candidate=pendingPlanCandidates[Number(btn.dataset.choosePlan)];
+  if(!candidate||candidate.unfinished.length){toast('この計画は作成できません');return;}
+  data.tasks=data.tasks.filter(t=>t.manual!==false).concat(candidate.tasks);
+  data.goalMinutes=input.daily;
+  data.plan={daily:input.daily,session:input.session,bufferPercent:input.bufferPercent,weekdays:input.weekdays,
+   subjects:input.subjects.map(({subject,range,priority,testDate,totalMinutes,bufferMinutes})=>({subject,range,priority,testDate,totalMinutes,bufferMinutes}))};
+  persist();render();
+  $('planMessage').textContent=`「${labels[candidate.kind].title}」を採用しました。${candidate.tasks.length}件のタスクを追加しました。`;
+  $('planCandidates').innerHTML='';
+  toast('選んだ学習計画を保存しました');
+ }));
+}
+$('makePlan').addEventListener('click',()=>{
+ $('planCandidates').innerHTML='';$('planMessage').textContent='';
+ try{
+  const input=collectPlanInputs();
+  const candidates=['balanced','deadline','light'].map(kind=>buildPlanCandidate(input,kind));
+  const failed=candidates.find(c=>c.unfinished.length);
+  if(failed)throw new Error(`「${failed.unfinished.map(s=>s.subject).join('、')}」の時間をテスト日までに割り振れませんでした。条件を調整してください。`);
+  pendingPlanCandidates=candidates;
+  showPlanCandidates(candidates,input);
+  $('planMessage').textContent='3種類のおすすめ計画を作成しました。内容を比較して、使いたい計画を選んでください。';
+ }catch(err){$('planMessage').textContent=err.message;}
+});
+
+/* Timer: wall-clock deltas keep measurements accurate in background tabs. */
+const timer={mode:'pomodoro',durationMinutes:25,running:false,startedAt:null,accumulated:0,logged:false,raf:null};
+function elapsedSeconds(){
+ return timer.accumulated+(timer.running&&timer.startedAt!==null?(Date.now()-timer.startedAt)/1000:0);
+}
+function currentSeconds(){return timer.mode==='up'?elapsedSeconds():Math.max(0,timer.durationMinutes*60-elapsedSeconds());}
+function drawTimer(){
+ const elapsed=elapsedSeconds(),remaining=currentSeconds(),shown=timer.mode==='up'?elapsed:remaining,whole=Math.max(0,Math.floor(shown));
+ $('clock').textContent=`${String(Math.floor(whole/60)).padStart(2,'0')}:${String(whole%60).padStart(2,'0')}`;
+ const pct=timer.mode==='up'?(elapsed%3600)/3600*100:Math.min(100,elapsed/(timer.durationMinutes*60)*100);
+ $('timerRing').style.setProperty('--ring',`${pct}%`);
+ $('timerStatus').textContent=timer.running?'集中中…':timer.accumulated>0?'一時停止中':'開始前';
+ $('startTimer').textContent=timer.accumulated>0?'▶　再開':'▶　開始';
+ $('startTimer').disabled=timer.running||timer.logged;
+ $('pauseTimer').disabled=!timer.running;$('finishTimer').disabled=elapsed<1||timer.logged;
+ $('countdownSettings').hidden=timer.mode!=='down';
+}
+function stopAnimation(){if(timer.raf!==null)cancelAnimationFrame(timer.raf);timer.raf=null;}
+function animateTimer(){
+ drawTimer();
+ if(timer.running){
+  if(timer.mode!=='up'&&elapsedSeconds()>=timer.durationMinutes*60){
+   timer.accumulated=timer.durationMinutes*60;timer.running=false;timer.startedAt=null;stopAnimation();
+   recordSession('タイマー完了');$('timerMessage').textContent='時間になりました！学習記録を保存しました。';
+  }else timer.raf=requestAnimationFrame(animateTimer);
+ }
+}
+function startTimer(){
+ if(timer.running||timer.logged)return;
+ if(timer.mode!=='up'&&timer.accumulated>=timer.durationMinutes*60)return;
+ timer.startedAt=Date.now();timer.running=true;$('timerMessage').textContent='学習中です。終了すると実際の学習時間を記録します。';
+ animateTimer();
+}
+function pauseTimer(){
+ if(!timer.running)return;
+ timer.accumulated+=Math.max(0,(Date.now()-timer.startedAt)/1000);timer.startedAt=null;timer.running=false;stopAnimation();drawTimer();
+ $('timerMessage').textContent='一時停止しました。「再開」で続けられます。';
+}
+function recordSession(reason){
+ if(timer.logged)return;
+ const seconds=Math.max(0,Math.floor(elapsedSeconds()));timer.logged=true;timer.running=false;timer.startedAt=null;stopAnimation();
+ if(seconds>=1){
+  data.logs.push({id:uid(),date:localDate(),seconds,minutes:Math.floor(seconds/60),subject:$('timerSubject').value.trim()||'その他',mode:timer.mode==='up'?'カウントアップ':timer.mode==='down'?`カウントダウン（${timer.durationMinutes}分）`:'ポモドーロ（25分）',reason,startedAt:new Date(Date.now()-seconds*1000).toISOString()});
+  persist();render();toast(`勉強時間を${formatDuration(seconds)}記録しました`);
+ }else toast('記録できる時間がありません');
+ drawTimer();
+}
+function resetTimer(){
+ if(timer.running)pauseTimer();
+ if(timer.accumulated>0&&!timer.logged&&!confirm('計測中の時間を記録せずにリセットしますか？'))return;
+ timer.running=false;timer.startedAt=null;timer.accumulated=0;timer.logged=false;stopAnimation();drawTimer();
+ $('timerMessage').textContent='リセットしました。準備ができたら開始してください。';
+}
+function changeMode(mode){
+ if(timer.running||timer.accumulated>0&&!timer.logged){
+  if(!confirm('現在の計測を終了してモードを切り替えますか？（記録は保存されません）'))return;
+ }
+ timer.running=false;timer.startedAt=null;timer.accumulated=0;timer.logged=false;timer.mode=mode;
+ timer.durationMinutes=mode==='pomodoro'?25:mode==='down'?Math.max(1,Math.min(600,Number($('countdownMinutes').value)||30)):0;
+ stopAnimation();
+ document.querySelectorAll('.timer-mode').forEach(b=>b.classList.toggle('active',b.dataset.mode===mode));
+ $('timerMessage').textContent='モードを選びました。「開始」を押してください。';drawTimer();
+}
+$('countdownMinutes').addEventListener('change',()=>{
+ if(timer.mode!=='down')return;
+ if(timer.running||timer.accumulated>0){toast('時間を変更するにはリセットしてください');$('countdownMinutes').value=timer.durationMinutes;return;}
+ timer.durationMinutes=Math.max(1,Math.min(600,Number($('countdownMinutes').value)||30));drawTimer();
+});
+document.querySelectorAll('.timer-mode').forEach(b=>b.addEventListener('click',()=>changeMode(b.dataset.mode)));
+$('startTimer').addEventListener('click',startTimer);
+$('pauseTimer').addEventListener('click',pauseTimer);
+$('finishTimer').addEventListener('click',()=>{if(timer.running)pauseTimer();recordSession('手動終了');$('timerMessage').textContent='おつかれさまでした！学習記録を保存しました。';});
+$('resetTimer').addEventListener('click',resetTimer);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden&&timer.running)drawTimer();});
+$('homeStart').addEventListener('click',()=>{
+ showPage('timer');
+ if(timer.logged){timer.accumulated=0;timer.logged=false;drawTimer();}
+ startTimer();
+});
+$('manualDate').value=localDate();
+$('addManualLog').addEventListener('click',()=>{
+ const date=$('manualDate').value||localDate(),subject=$('manualSubject').value.trim()||'その他';
+ const minutes=Math.floor(Number($('manualMinutes').value));
+ if(!Number.isFinite(minutes)||minutes<1||minutes>1440){toast('勉強時間は1〜1440分で入力してください');$('manualMinutes').focus();return;}
+ data.logs.push({id:uid(),date,seconds:minutes*60,minutes,subject,mode:'手入力',reason:'手入力',startedAt:new Date(`${date}T12:00:00`).toISOString()});
+ persist();render();$('manualMinutes').value='';toast(`${subject}の勉強時間を${minutes}分記録しました`);
+});
+
+$('clearData').addEventListener('click',()=>{
+ if(!confirm('タスク・計画・勉強記録・設定をすべて削除します。この操作は取り消せません。よろしいですか？'))return;
+ data=blankData();localStorage.removeItem('studyflow_data');persist();initPlanForm();render();resetTimer();toast('すべてのデータを削除しました');
+});
+$('newDate').value=localDate();$('manualDate').value=localDate();
+initPlanForm();render();drawTimer();
+</script>
+</body>
+</html>
